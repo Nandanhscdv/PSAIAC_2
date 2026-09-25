@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import "./App.css";
 
 function App() {
@@ -10,6 +10,42 @@ function App() {
     description: "",
     attachment: null,
   });
+
+  const [prediction, setPrediction] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [predictionError, setPredictionError] = useState("");
+
+  const [tickets, setTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+
+  useEffect(() => {
+  if (activePage !== "tickets" && activePage !== "dashboard") {
+  return;
+}
+
+  const loadTickets = async () => {
+    setTicketsLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/tickets");
+
+      if (!response.ok) {
+        throw new Error(`Failed to load tickets: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      setTickets(data);
+    } catch (error) {
+      console.error("Ticket loading error:", error);
+      setTickets([]);
+    } finally {
+      setTicketsLoading(false);
+    }
+  };
+
+  loadTickets();
+}, [activePage]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -27,16 +63,49 @@ function App() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!ticketData.title.trim() || !ticketData.description.trim()) {
-      return;
+        return;
     }
 
-    setTicketSubmitted(true);
-    setActivePage("result");
-  };
+    setIsAnalyzing(true);
+    setPredictionError("");
+    setPrediction(null);
+
+    try {
+        const ticketText = `${ticketData.title}\n${ticketData.description}`;
+
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ticket_text: ticketText,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Prediction failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        setPrediction(data);
+
+        setTicketSubmitted(true);
+        setActivePage("result");
+    } catch (error) {
+        console.error("Prediction error:", error);
+        setPredictionError(
+            "Unable to analyze the ticket. Please make sure the backend is running."
+        );
+    } finally {
+        setIsAnalyzing(false);
+    }
+};
 
   const goToCreateTicket = () => {
     setTicketSubmitted(false);
@@ -224,7 +293,7 @@ function App() {
 
                 <div>
                   <span>My Tickets</span>
-                  <strong>12</strong>
+                  <strong>{tickets.length}</strong>
                 </div>
 
               </div>
@@ -238,7 +307,7 @@ function App() {
 
                 <div>
                   <span>Open Tickets</span>
-                  <strong>3</strong>
+                  <strong>{tickets.length}</strong>
                 </div>
 
               </div>
@@ -252,7 +321,7 @@ function App() {
 
                 <div>
                   <span>Resolved</span>
-                  <strong>9</strong>
+                  <strong>0</strong>
                 </div>
 
               </div>
@@ -298,110 +367,75 @@ function App() {
 
               </div>
 
+            {ticketsLoading ? (
+  <div className="table-row">
+    <span>Loading...</span>
+    <span>Loading tickets...</span>
+    <span>-</span>
+    <span>-</span>
+    <span>-</span>
+  </div>
+) : tickets.length === 0 ? (
+  <div className="table-row">
+    <span>-</span>
+    <span>
+      <strong>No tickets found</strong>
+      <small>Raise a ticket to get started.</small>
+    </span>
+    <span>-</span>
+    <span>-</span>
+    <span>-</span>
+  </div>
+) : (
+  tickets.slice(0, 5).map((ticket) => {
+    const priority = ticket.predicted_priority || "Unknown";
+    const priorityClass = priority.toLowerCase();
 
-              <div className="table-row">
+    const issueText = ticket.ticket_text || "No description";
 
-                <span className="ticket-id">
-                  #1028
-                </span>
+    const firstLine = issueText.split("\n")[0];
+    const secondLine = issueText.split("\n").slice(1).join(" ");
 
-                <span>
-                  <strong>
-                    Unable to connect to VPN
-                  </strong>
+    return (
+      <div className="table-row" key={ticket.id}>
 
-                  <small>
-                    Network / VPN
-                  </small>
-                </span>
+        <span className="ticket-id">
+          #{ticket.id}
+        </span>
 
-                <span>
-                  <span className="priority high">
-                    High
-                  </span>
-                </span>
+        <span>
+          <strong>
+            {firstLine}
+          </strong>
 
-                <span>
-                  <span className="status open">
-                    Open
-                  </span>
-                </span>
+          <small>
+            {secondLine || "IT Support Ticket"}
+          </small>
+        </span>
 
-                <span className="date">
-                  Today, 10:32 AM
-                </span>
+        <span>
+          <span className={`priority ${priorityClass}`}>
+            {priority}
+          </span>
+        </span>
 
-              </div>
+        <span>
+          <span className="status open">
+            Open
+          </span>
+        </span>
 
+        <span className="date">
+          {ticket.created_at
+            ? new Date(ticket.created_at).toLocaleString()
+            : "-"}
+        </span>
 
-              <div className="table-row">
+      </div>
+    );
+  })
+)}
 
-                <span className="ticket-id">
-                  #1024
-                </span>
-
-                <span>
-                  <strong>
-                    Password reset request
-                  </strong>
-
-                  <small>
-                    Account / Access
-                  </small>
-                </span>
-
-                <span>
-                  <span className="priority medium">
-                    Medium
-                  </span>
-                </span>
-
-                <span>
-                  <span className="status assigned">
-                    Assigned
-                  </span>
-                </span>
-
-                <span className="date">
-                  Yesterday
-                </span>
-
-              </div>
-
-
-              <div className="table-row">
-
-                <span className="ticket-id">
-                  #1019
-                </span>
-
-                <span>
-                  <strong>
-                    Office printer not working
-                  </strong>
-
-                  <small>
-                    Hardware / Printer
-                  </small>
-                </span>
-
-                <span>
-                  <span className="priority low">
-                    Low
-                  </span>
-                </span>
-
-                <span>
-                  <span className="status resolved">
-                    Resolved
-                  </span>
-                </span>
-
-                <span className="date">
-                  Aug 25, 2026
-                </span>
-
-              </div>
 
             </div>
 
@@ -613,7 +647,7 @@ function App() {
                 </h2>
 
                 <p>
-                  Ticket <strong>#1029</strong> has been
+                  Ticket <strong>#{prediction?.ticket_id || "—"}</strong> has been
                   received and analyzed.
                 </p>
               </div>
@@ -643,11 +677,11 @@ function App() {
 
                 <div className="confidence">
                   <small>
-                    AI Confidence
+                    AI Model
                   </small>
 
                   <strong>
-                    91%
+                    Priority Prediction
                   </strong>
                 </div>
 
@@ -684,11 +718,11 @@ function App() {
                   </span>
 
                   <strong>
-                    Network / VPN
+                    Not Available
                   </strong>
 
                   <small>
-                    Predicted issue category
+                    Category prediction not implemented
                   </small>
 
                 </div>
@@ -700,9 +734,9 @@ function App() {
                     PRIORITY
                   </span>
 
-                  <strong className="prediction-high">
-                    High
-                  </strong>
+                  <strong className={`prediction-${prediction?.priority?.toLowerCase() || "unknown"}`}>
+    {prediction?.priority || "Analyzing..."}
+</strong>
 
                   <small>
                     Predicted urgency
@@ -718,11 +752,11 @@ function App() {
                   </span>
 
                   <strong>
-                    Network Support
+                    Not Assigned
                   </strong>
 
                   <small>
-                    Recommended team
+                    Team routing not implemented
                   </small>
 
                 </div>
@@ -745,11 +779,11 @@ function App() {
                   </span>
 
                   <strong>
-                    Approximately 2 hours
+                    Not Available
                   </strong>
 
                   <small>
-                    Based on historical ticket resolution patterns
+                    Resolution-time prediction not implemented
                   </small>
 
                 </div>
@@ -771,7 +805,7 @@ function App() {
                   <span>Ticket ID</span>
 
                   <strong>
-                    #1029
+                    #{prediction?.ticket_id || "—"}
                   </strong>
                 </div>
 
@@ -853,110 +887,77 @@ function App() {
 
               </div>
 
-
-              <div className="table-row">
-
-                <span className="ticket-id">
-                  #1028
-                </span>
-
-                <span>
-                  <strong>
-                    Unable to connect to VPN
-                  </strong>
-
-                  <small>
-                    Network / VPN
-                  </small>
-                </span>
-
-                <span>
-                  <span className="priority high">
-                    High
+            
+                          {ticketsLoading ? (
+                <div className="table-row">
+                  <span>Loading...</span>
+                  <span>Loading tickets...</span>
+                  <span>-</span>
+                  <span>-</span>
+                  <span>-</span>
+                </div>
+              ) : tickets.length === 0 ? (
+                <div className="table-row">
+                  <span>-</span>
+                  <span>
+                    <strong>No tickets found</strong>
+                    <small>Raise a ticket to get started.</small>
                   </span>
-                </span>
+                  <span>-</span>
+                  <span>-</span>
+                  <span>-</span>
+                </div>
+              ) : (
+                tickets.map((ticket) => {
+                  const priority = ticket.predicted_priority || "Unknown";
+                  const priorityClass = priority.toLowerCase();
 
-                <span>
-                  <span className="status open">
-                    Open
-                  </span>
-                </span>
+                  const issueText = ticket.ticket_text || "No description";
 
-                <span className="date">
-                  Today, 10:32 AM
-                </span>
+                  const firstLine = issueText.split("\n")[0];
+                  const secondLine = issueText.split("\n").slice(1).join(" ");
 
-              </div>
+                  return (
+                    <div className="table-row" key={ticket.id}>
 
+                      <span className="ticket-id">
+                        #{ticket.id}
+                      </span>
 
-              <div className="table-row">
+                      <span>
+                        <strong>
+                          {firstLine}
+                        </strong>
 
-                <span className="ticket-id">
-                  #1024
-                </span>
+                        <small>
+                          {secondLine || "IT Support Ticket"}
+                        </small>
+                      </span>
 
-                <span>
-                  <strong>
-                    Password reset request
-                  </strong>
+                      <span>
+                        <span className={`priority ${priorityClass}`}>
+                          {priority}
+                        </span>
+                      </span>
 
-                  <small>
-                    Account / Access
-                  </small>
-                </span>
+                      <span>
+                        <span className="status open">
+                          Open
+                        </span>
+                      </span>
 
-                <span>
-                  <span className="priority medium">
-                    Medium
-                  </span>
-                </span>
+                      <span className="date">
+                        {ticket.created_at
+                          ? new Date(ticket.created_at).toLocaleString()
+                          : "-"}
+                      </span>
 
-                <span>
-                  <span className="status assigned">
-                    Assigned
-                  </span>
-                </span>
+                    </div>
+                  );
+                })
+              )}
 
-                <span className="date">
-                  Yesterday
-                </span>
-
-              </div>
-
-
-              <div className="table-row">
-
-                <span className="ticket-id">
-                  #1019
-                </span>
-
-                <span>
-                  <strong>
-                    Office printer not working
-                  </strong>
-
-                  <small>
-                    Hardware / Printer
-                  </small>
-                </span>
-
-                <span>
-                  <span className="priority low">
-                    Low
-                  </span>
-                </span>
-
-                <span>
-                  <span className="status resolved">
-                    Resolved
-                  </span>
-                </span>
-
-                <span className="date">
-                  Aug 25, 2026
-                </span>
-
-              </div>
+              
 
             </div>
 
