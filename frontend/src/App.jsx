@@ -274,9 +274,7 @@ function App() {
 
               </div>
 
-              <div className="welcome-icon">
-                🤖
-              </div>
+
 
             </div>
 
@@ -887,7 +885,7 @@ function App() {
 
               </div>
 
-            
+
                           {ticketsLoading ? (
                 <div className="table-row">
                   <span>Loading...</span>
@@ -957,7 +955,7 @@ function App() {
                 })
               )}
 
-              
+
 
             </div>
 
