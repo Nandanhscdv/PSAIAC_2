@@ -255,14 +255,14 @@ function App() {
                 <h2>
                   Submit an IT issue.
                   <br />
-                  We'll route it to the right team.
+                  We'll analyze and prioritize your ticket.
                 </h2>
 
                 <p>
                   Describe your problem in your own words.
-                  Our intelligent triage system will analyze
-                  the ticket, determine its priority, and route
-                  it to the appropriate support team.
+Our intelligent triage system will analyze the
+ticket and predict its priority to help support
+teams handle issues more effectively.
                 </p>
 
                 <button
@@ -465,7 +465,7 @@ function App() {
 
                   <p>
                     Describe your issue and let our intelligent
-                    triage system handle the rest.
+triage system predict its priority.
                   </p>
                 </div>
 
@@ -584,10 +584,7 @@ function App() {
                     </strong>
 
                     <p>
-                      After submission, the system will analyze
-                      your ticket and determine its category,
-                      priority, support team, and estimated
-                      resolution time.
+                      After submission, the system will analyze your ticket and predict its priority. Category prediction, automatic team routing, and resolution-time prediction are planned future enhancements.
                     </p>
 
                   </div>

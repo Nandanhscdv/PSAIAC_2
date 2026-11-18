@@ -1146,3 +1146,262 @@ button {
     padding: 20px;
   }
 }
+/* ===== Dark Charcoal Theme ===== */
+
+body,
+.app {
+  background: #17191f;
+  color: #e5e7eb;
+}
+
+/* Sidebar */
+.sidebar {
+  background: #101116;
+  border-right: 1px solid #292b33;
+}
+
+.brand-icon,
+.avatar,
+.analysis-ai-icon {
+  background: #334b8e;
+}
+
+.nav-item {
+  color: #a5a9b4;
+}
+
+.nav-item:hover {
+  background: #22242c;
+  color: #ffffff;
+}
+
+.nav-item.active {
+  background: #303f68;
+  color: #ffffff;
+}
+
+/* Remove notification bell */
+.notification {
+  display: none !important;
+}
+
+/* Main banner */
+.welcome-card {
+  background: #252a38;
+  border: 1px solid #343a4b;
+  color: #f3f4f6;
+}
+
+.primary-button {
+  background: #dce3f5;
+  color: #263b70;
+}
+
+/* Dashboard cards and ticket table */
+.stat-card,
+.ticket-table,
+.ticket-form-card,
+.ai-analysis-card,
+.prediction-card {
+  background: #202229;
+  border-color: #343741;
+  color: #e5e7eb;
+}
+
+.table-header {
+  background: #191b21;
+  color: #b5b8c2;
+}
+
+.table-row {
+  border-top-color: #30323a;
+}
+
+.topbar p,
+.profile-info span,
+.stat-card span,
+.section-header p,
+.date,
+.tickets-summary p {
+  color: #a1a5b0;
+}
+
+.topbar h1,
+.section-header h2,
+.stat-card strong,
+.table-row strong,
+.form-heading h2,
+.submitted-ticket h3,
+.prediction-card strong,
+.eta-card strong {
+  color: #f3f4f6;
+}
+
+/* Buttons and links */
+.ticket-id,
+.view-all {
+  color: #9bb5ff;
+}
+
+.submit-button {
+  background: #3b5288;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.submit-button:hover {
+  background: #49649f;
+}
+
+.secondary-button {
+  background: #242730;
+  border-color: #41444f;
+  color: #e5e7eb;
+}
+
+/* Ticket form */
+.form-group label {
+  color: #e5e7eb;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  background: #17191f;
+  border-color: #41444f;
+  color: #f3f4f6;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #718bc9;
+  box-shadow: 0 0 0 3px rgba(113, 139, 201, 0.16);
+}
+
+.upload-box {
+  background: #191b21;
+  border-color: #454957;
+}
+
+.upload-box strong {
+  color: #e5e7eb;
+}
+
+/* AI analysis section */
+.analysis-heading {
+  background: #1b1d24;
+  border-bottom-color: #343741;
+}
+
+.analysis-heading span {
+  color: #a9beff;
+}
+
+.submitted-ticket {
+  border-bottom-color: #343741;
+}
+
+.submitted-ticket p {
+  color: #b0b4bf;
+}
+
+.eta-card {
+  background: #1b2029;
+  border-color: #343b49;
+}
+
+.result-footer {
+  border-top-color: #343741;
+}
+
+/* Priority badges */
+.priority.blocker,
+.priority.highest {
+  background: #4b2428;
+  color: #ffb8bd;
+}
+
+.priority.high {
+  background: #493426;
+  color: #ffc18c;
+}
+
+.priority.medium {
+  background: #453b22;
+  color: #f2d47d;
+}
+
+.priority.low {
+  background: #203d30;
+  color: #9de0b7;
+}
+
+/* Ticket status badges */
+.status.open {
+  background: #273653;
+  color: #b5caff;
+}
+
+.status.assigned {
+  background: #453b22;
+  color: #f2d47d;
+}
+
+.status.resolved {
+  background: #203d30;
+  color: #9de0b7;
+}
+/* Darker statistic icon backgrounds */
+
+.stat-icon.blue {
+  background: #283653;
+}
+
+.stat-icon.orange {
+  background: #453528;
+}
+
+.stat-icon.green {
+  background: #263d32;
+}
+/* Fix success notification text contrast */
+
+.success-header {
+  background: #1e3027;
+  border: 1px solid #315b43;
+}
+
+.success-header h2 {
+  color: #d1fae5;
+}
+
+.success-header p {
+  color: #b7cbbd;
+}
+
+.success-header p strong {
+  color: #ffffff;
+}
+
+.success-icon {
+  background: #43885c;
+  color: #ffffff;
+}
+/* Dark theme for the Intelligent Triage notice */
+
+.ai-notice {
+  background: #202633;
+  border: 1px solid #343f58;
+}
+
+.ai-notice-icon {
+  background: #293550;
+  color: #b7c9ff;
+}
+
+.ai-notice strong {
+  color: #c5d3ff;
+}
+
+.ai-notice p {
+  color: #b0b8c8;
+}
